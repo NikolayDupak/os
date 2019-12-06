@@ -1,0 +1,57 @@
+#!/bin/bash
+
+dat=$(date +%Y-%m-%d)
+
+lastdir=$(ls $HOME | grep -E "(^Backup-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])+$" | sort -r | head -n 1)
+backdir="Backup-$dat"
+if [ -d $HOME/$lastdir ]
+then
+    day=$(date +%Y-%m-%d -d "-7 days")
+    if [[ "Backup-$day" < $lastdir ]]
+    then
+	backdir=$lastdir
+    fi
+fi
+sour="source"
+filelog="$HOME/backup-report"
+nlog="$HOME/.nlog"
+n2log="$HOME/.n2log"
+if [ ! -d $HOME/$backdir ]
+then
+    mkdir $HOME/$backdir
+    allfiles=$(ls $HOME/$sour/*) 
+    cp -r $HOME/$sour $HOME/$backdir
+    echo "Copy dir $sour:$dat:" >> $filelog
+    echo "--$allfiles " >> $filelog
+else
+    allfiles=$(ls $HOME/$sour/*) 
+    for file in $allfiles
+    do
+	    filename=$(echo $file | sed "s#${HOME}#${HOME}/${backdir}#g")
+	if [ -f $filename ]
+	then
+	    fsize=$(wc -c $file | awk '{print $1}')
+	    fcsize=$(wc -c $filename | awk '{print $1}')
+	    if [ $fsize != $fcsize ]
+	    then
+		mv $filename $filename.$dat
+	        cp $file $filename
+	        echo "change $file $filename" >> $n2log
+	    fi
+	else
+            cp $file $filename
+	    echo "--copy $file " >> $nlog
+	fi
+    done
+    echo "Add file in dir $sour:$dat:" >> $filelog
+    if [ -f $nlog ]
+    then
+        cat $nlog >> $filelog
+        rm -r $nlog
+    fi
+    if [ -f $n2log ]
+    then
+        cat $n2log >> $filelog
+        rm -r $n2log
+    fi
+fi
