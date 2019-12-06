@@ -9,8 +9,8 @@ if [  -d $HOME/$backdir ]
 then
     if [ ! -d $resdir ]; then mkdir $resdir; fi
     if [ ! -d $resdir/$sout ]; then mkdir $resdir/$sout; fi
-    allfiles=$(ls $HOME/$backdir/$sour/* | grep -Ev "(.[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])+$")
-
+    allfiles=$(ls $HOME/$backdir/$sour/* | grep -Ev "(.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])+$")
+    echo $allfiles
     for file in $allfiles
     do
 	    cp $file $resdir/ 

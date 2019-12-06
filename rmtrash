@@ -17,10 +17,11 @@ then
     let "ind = ind + 1"
     echo "$ind" > $allway/.ind
     fullname=$PWD/$name
-    ln $name $allway/$ind
-    rm $name
+    ln -- $name $allway/$ind
+    rm -- "$name"
     echo ""$ind":"$fullname"" >> $allway/$filelog
 else
+    echo $PWD
     echo "Error file name."
 fi
 
