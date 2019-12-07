@@ -12,7 +12,8 @@ then
 fi
 name=$1
 
-grep -Eh "/$name$" $allway/$filelog | awk -F: '{print}' > $allway/$filerez
+grep -hF -- "/$name:" $allway/$filelog | awk -F: '{print}' > $allway/$filerez
+cat $allway/$filerez
 input=$allway/$filerez
 #while IFS= read -r line
 for line in $(cat $allway/$filerez)
@@ -27,12 +28,12 @@ do
     then	
         if [ -d $way ]
         then
-	    if [ -f $way$name ]
+	    if [ -f "$way""$name" ]
 	    then
-		echo "File $name exists, new name $name.1"
+		echo "File "$name" exists, new name $name.1"
 	        name="$name.1"
 	    fi
-	    ln $allway/$ind $fullname 	#$way$name
+	    ln $allway/$ind "$way""$name" #$fullname
 	    rm -rf $allway/$ind
 	    sed -i "/^$ind/d" $allway/$filelog
 	else
@@ -40,7 +41,8 @@ do
 	    ln $allway/$ind $dir$name
 	    rm -rf $allway/$ind
 	    sed -i "/^$ind/d" $allway/$filelog
-        fi    
+        fi   
+       break	
     fi	    
 done
 rm -rf $allway/$filerez
