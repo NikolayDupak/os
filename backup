@@ -23,19 +23,21 @@ then
     mkdir $HOME/$backdir
     allfiles=$(ls  $HOME/$sour/*) 
     echo "$allfiles"
-    cp -r -- "$HOME/$sour" "$HOME/$backdir"
+    cp  -- "$HOME/$sour" "$HOME/$backdir"
     echo "Copy dir $sour:$dat:" >> $filelog
     echo "--$allfiles " >> $filelog
 else
-    allfiles=$(ls $HOME/$sour/*)
+    allfiles=$(ls -a $HOME/$sour/)
     echo "$allfiles" 
-    for file in $allfiles
+    echo "$allfiles" > .files
+    while read -r line
     do
+	    file=$HOME/$sour/$line
 	filename=$(echo "$file" | sed "s#${HOME}#${HOME}/${backdir}#g")
 	echo "$filename"
-	if [ -f "$filename" ]
+	if [ -f "$line" ]
 	then
-	    fsize=$(wc -c "$file" | awk '{print $1}')
+	    fsize=$(wc -c "$line" | awk '{print $1}')
 	    fcsize=$(wc -c "$filename" | awk '{print $1}')
 	    if [ $fsize != $fcsize ]
 	    then
@@ -50,14 +52,14 @@ else
 			let ind=$ind+1
 		fi
 	        done
-		cp "$file" "$filename"
+		cp  "$file" "$filename"
 	        echo "change "$file" "$filename"" >> $n2log
 	    fi
 	else
             cp "$file" "$filename"
 	    echo "--copy "$file" " >> $nlog
 	fi
-    done
+    done < .files
     echo "Add file in dir $sour:$dat:" >> $filelog
     if [ -f $nlog ]
     then
